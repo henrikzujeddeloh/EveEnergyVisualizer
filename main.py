@@ -38,6 +38,11 @@ def create_df(path):
     return data_frame
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--date", help="output energy consumption history", action="store_true")
+args = parser.parse_args()
+
+
 df = create_df(DATA_DIR)
 print(df)
 print(df.info(memory_usage="deep"))
