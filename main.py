@@ -49,7 +49,8 @@ def show_date(data_frame):
     data_frame = data_frame.groupby(['datetime','accessory'])['energy'].sum().unstack()
     data_frame['total'] = total
 
-    data_frame.plot.area(linewidth=1, figsize=[WIDTH,HEIGHT], subplots=True, sharex=True, sharey=True, xlabel="Date", ylabel="Energy usage (Wh)")
+    fig_date, axs_date = plt.subplots(figsize=[WIDTH, HEIGHT])
+    data_frame.plot.area(ax=axs_date, linewidth=1, subplots=True, sharex=True, sharey=True, xlabel="Date", ylabel="Energy usage (Wh)")
 
 
 
