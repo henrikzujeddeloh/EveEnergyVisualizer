@@ -8,6 +8,9 @@ import seaborn as sns
 
 DATA_DIR = "data/"
 
+WIDTH = 10
+HEIGHT = 5
+DPI = 100
 
 def create_df(path):
     # creates empty dataframe
@@ -38,11 +41,28 @@ def create_df(path):
     return data_frame
 
 
+def show_date(data_frame):
+    # creates new date column
+    data_frame['datetime'] = pd.to_datetime(data_frame['datetime']).dt.date
+    # creates new data frame with daily total energy
+    total = data_frame.groupby(['datetime'])['energy'].sum()
+    data_frame = data_frame.groupby(['datetime','accessory'])['energy'].sum().unstack()
+    data_frame['total'] = total
+
+    data_frame.plot.area(linewidth=1, figsize=[WIDTH,HEIGHT], subplots=True, sharex=True, sharey=True, xlabel="Date", ylabel="Energy usage (Wh)")
+
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--date", help="output energy consumption history", action="store_true")
+
+
 args = parser.parse_args()
 
-
 df = create_df(DATA_DIR)
-print(df)
+if args.date:
+    show_date(df)
+
+
 print(df.info(memory_usage="deep"))
+plt.show()
