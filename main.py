@@ -83,16 +83,40 @@ def show_heatmap(data_frame):
     fig_heatpmap, axs_heatmap = plt.subplots(figsize=[WIDTH,HEIGHT])
     sns.heatmap(hour_weekday, cmap="Blues", ax=axs_heatmap)
     axs_heatmap.set_title("Hourly energy usage (Wh)")
-    print(tabulate(hour_weekday, tablefmt='psql', showindex=False))
 
+
+def show_hour(data_frame):
+    # converts to datetime
+    data_frame['datetime'] = pd.to_datetime(data_frame['datetime'])
+
+    # calculates number of days for normalization
+    first_day = data_frame['datetime'].iloc[-1]
+    last_day = data_frame['datetime'].iloc[0]
+    num_days = (last_day-first_day).days
+
+    # adds hour column
+    data_frame['hour'] = data_frame['datetime'].dt.hour
+    
+    # creates pivot table of accessory energy usage by hour
+    data_frame = data_frame.groupby(['hour', 'accessory'])['energy'].sum().unstack()/num_days
+
+    # outputs line graph
+    fig_hour, axs_hour = plt.subplots(figsize=[WIDTH,HEIGHT])
+    data_frame.plot.line(ax=axs_hour, linewidth=1, xlabel="Hour", ylabel="Energy usage (Wh)", xticks=np.arange(0,24,1), grid=True)
+
+
+# instantiate argument parser
 parser = argparse.ArgumentParser()
+
+# define arguments
 parser.add_argument("--date", help="output energy consumption history", action="store_true")
 parser.add_argument("--heatmap", help="output energy consumption heatmap", action="store_true")
+parser.add_argument("--hour", help="output energy consumption by hour", action="store_true")
 
 args = parser.parse_args()
 
 
-
+# create dataframe from excel files in \data directory
 df = create_df(DATA_DIR)
 
 
@@ -101,6 +125,9 @@ if args.date:
 
 if args.heatmap:
     show_heatmap(df)
+
+if args.hour:
+    show_hour(df)
 
 
 plt.show()

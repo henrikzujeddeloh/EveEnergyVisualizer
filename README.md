@@ -16,6 +16,8 @@ Visualize Eve Energy consumption data.
 | --- | --- |
 | --date | outputs a line graph visualizing energy usage over time |
 | --heatmap | outputs a heatmap of total energy usage by day of week and time of day |
+| --hour | outputs a line graph of the hourly energy usage of each accessory |
+
 
 
 [TODO](TODO.md)
